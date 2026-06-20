@@ -121,6 +121,8 @@
   .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
   .dot.red { background: var(--accent); }
   .dot.blue { background: var(--blue); }
+  .dot.orange { background: #e8923a; }
+  .dot.green { background: #4a9d5b; }
   footer {
     border-top: 1px solid var(--line);
     margin-top: 56px;
@@ -210,8 +212,10 @@
       <h2>The interactive map</h2>
       <p>Explore every priority zone and existing sensor below.</p>
       <div class="legend">
-        <span><span class="dot red"></span> Priority deployment zones</span>
-        <span><span class="dot blue"></span> Existing PurpleAir sensors</span>
+        <span><span class="dot red"></span> Priority deployment zone</span>
+        <span><span class="dot orange"></span> Coverage gap (lower priority)</span>
+        <span><span class="dot green"></span> Adequately covered</span>
+        <span><span class="dot blue"></span> Existing PurpleAir sensor</span>
       </div>
     </div>
     <div class="map-frame">
