@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LA Air Quality Monitoring Gap Analysis</title>
+<style>
+  :root {
+    --ink: #1a1f24;
+    --muted: #5c6670;
+    --line: #e2e6ea;
+    --bg: #ffffff;
+    --soft: #f6f8f9;
+    --accent: #c0392b;
+    --accent-soft: #fbeae8;
+    --blue: #2c6fbf;
+    --maxw: 820px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    font-size: 17px;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0;
+  }
+  header.hero { padding: 64px 0 40px; border-bottom: 1px solid var(--line); }
+  h1 {
+    font-size: 38px;
+    line-height: 1.15;
+    margin: 14px 0 18px;
+    letter-spacing: -0.02em;
+  }
+  .lede { font-size: 20px; color: var(--muted); margin: 0 0 18px; }
+  .gen { font-size: 13px; color: var(--muted); }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 40px 0;
+  }
+  .stat {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .stat .num { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat .lab { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  h2 {
+    font-size: 26px;
+    margin: 48px 0 16px;
+    letter-spacing: -0.01em;
+    padding-top: 12px;
+  }
+  h3 { font-size: 18px; margin: 28px 0 8px; }
+  p { margin: 0 0 16px; }
+  ul { padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14.5px;
+  }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { background: var(--soft); font-weight: 600; }
+  td a { color: var(--blue); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .note { font-size: 13.5px; color: var(--muted); }
+  .steps { counter-reset: step; margin: 24px 0; }
+  .step {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px 18px 58px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 15px;
+  }
+  .step h3 { margin: 0 0 6px; }
+  .step p { margin: 0; font-size: 15px; color: var(--muted); }
+  .step a { color: var(--blue); }
+  /* Map section */
+  .map-section {
+    margin: 48px 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--soft);
+  }
+  .map-head { padding: 18px 22px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .map-head h2 { margin: 0 0 4px; padding: 0; }
+  .map-head p { margin: 0; font-size: 14px; color: var(--muted); }
+  .map-frame { position: relative; width: 100%; height: 600px; background: var(--soft); }
+  .map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .map-fallback { padding: 16px 22px; font-size: 14px; }
+  .map-fallback a { color: var(--blue); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); padding: 0; margin-top: 6px; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .dot.red { background: var(--accent); }
+  .dot.blue { background: var(--blue); }
+  footer {
+    border-top: 1px solid var(--line);
+    margin-top: 56px;
+    padding: 28px 0 56px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  strong { font-weight: 650; }
+  @media (max-width: 640px) {
+    h1 { font-size: 30px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .map-frame { height: 460px; }
+    body { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Environmental Justice · Los Angeles County</p>
+    <h1>Who's breathing bad air without anyone measuring it?</h1>
+    <p class="lede">A data analysis combining real-time air quality sensor locations with California's official pollution and poverty data to find the neighborhoods that need monitoring most — and have it least.</p>
+    <p class="gen">Generated June 04, 2026 · Data: PurpleAir API + CalEnviroScreen 4.0</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="stats">
+    <div class="stat"><div class="num">222</div><div class="lab">Priority census tracts identified</div></div>
+    <div class="stat"><div class="num">841</div><div class="lab">PurpleAir sensors checked in LA County</div></div>
+    <div class="stat"><div class="num">3.2km</div><div class="lab">Avg distance to nearest sensor in priority zones</div></div>
+    <div class="stat"><div class="num">$50</div><div class="lab">Estimated cost to build one sensor node</div></div>
+  </div>
+
+  <h2>The problem</h2>
+  <p>PurpleAir is a citizen-run network of low-cost air quality sensors. Anyone can buy one and plug it in — and their data appears publicly on a map. The problem is that people who buy $250 air quality monitors tend to be wealthy homeowners. So the map of sensors mirrors the map of wealth.</p>
+  <p><strong>Peer-reviewed research from UC Irvine (2022)</strong> confirmed this pattern directly: census tracts with higher percentages of Hispanic, Latino, and Black residents and lower median household incomes had significantly fewer PurpleAir sensors per capita in LA County — even though those same neighborhoods tend to have <em>worse</em> air quality.</p>
+  <p>The result is an information gap that compounds existing inequality. Residents of Wilmington, Watts, Compton, and Boyle Heights breathe some of the worst air in the county — diesel from the 710 freeway, port traffic, industrial facilities — and have the least data about it. Better data leads to enforcement. No data means no proof. No proof means no action.</p>
+
+  <h2>What this analysis did</h2>
+  <p>This script pulled live sensor data from the PurpleAir API and combined it with California's official CalEnviroScreen 4.0 dataset — which scores every census tract in the state on pollution burden and socioeconomic vulnerability.</p>
+
+  <h3>Methodology</h3>
+  <ul>
+    <li>Fetched locations of all 841 outdoor PurpleAir sensors in LA County via the PurpleAir API</li>
+    <li>Loaded CalEnviroScreen 4.0 data for all 2,305 LA County census tracts</li>
+    <li>Calculated the distance from each census tract centroid to its nearest PurpleAir sensor</li>
+    <li>Flagged tracts in the top 30% for PM2.5 pollution AND top 40% for poverty AND with no sensor within 1.5km as "priority zones"</li>
+    <li>Ranked priority zones by PM2.5 percentile to identify the most urgent deployment targets</li>
+  </ul>
+
+  <h2>Top 10 priority deployment zones</h2>
+  <p>These are the census tracts with the worst combination of air pollution, poverty, and sensor absence. Each one represents a real neighborhood where people are breathing documented bad air with no one measuring it nearby. The coordinates are the centroid of each census tract — a good starting point for finding a building, school, or community organization to host a sensor.</p>
+
+  <table>
+    <thead>
+      <tr><th>#</th><th>Census Tract</th><th>PM2.5 Rank</th><th>Poverty Rank</th><th>Nearest Sensor</th><th>Map</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>6037132502.0</td><td>100th</td><td>72nd</td><td>1.6 km</td><td><a href="https://maps.google.com/?q=34.1911391,-118.5469513">View ↗</a></td></tr>
+      <tr><td>2</td><td>6037131010.0</td><td>99th</td><td>65th</td><td>1.8 km</td><td><a href="https://maps.google.com/?q=34.214735,-118.5382539">View ↗</a></td></tr>
+      <tr><td>3</td><td>6037139303.0</td><td>99th</td><td>64th</td><td>2.5 km</td><td><a href="https://maps.google.com/?q=34.1762844,-118.5333073">View ↗</a></td></tr>
+      <tr><td>4</td><td>6037139302.0</td><td>99th</td><td>65th</td><td>2.6 km</td><td><a href="https://maps.google.com/?q=34.1767231,-118.5383656">View ↗</a></td></tr>
+      <tr><td>5</td><td>6037402101.0</td><td>99th</td><td>78th</td><td>1.6 km</td><td><a href="https://maps.google.com/?q=34.0860588,-117.7337541">View ↗</a></td></tr>
+      <tr><td>6</td><td>6037402702.0</td><td>99th</td><td>93rd</td><td>2.2 km</td><td><a href="https://maps.google.com/?q=34.0640498,-117.7259547">View ↗</a></td></tr>
+      <tr><td>7</td><td>6037402801.0</td><td>98th</td><td>82nd</td><td>2.1 km</td><td><a href="https://maps.google.com/?q=34.0542821,-117.7349296">View ↗</a></td></tr>
+      <tr><td>8</td><td>6037402804.0</td><td>98th</td><td>81st</td><td>2.7 km</td><td><a href="https://maps.google.com/?q=34.0483608,-117.7322415">View ↗</a></td></tr>
+      <tr><td>9</td><td>6037402903.0</td><td>97th</td><td>75th</td><td>3.5 km</td><td><a href="https://maps.google.com/?q=34.039394,-117.7335433">View ↗</a></td></tr>
+      <tr><td>10</td><td>6037402803.0</td><td>97th</td><td>81st</td><td>2.2 km</td><td><a href="https://maps.google.com/?q=34.0478488,-117.7453051">View ↗</a></td></tr>
+    </tbody>
+  </table>
+  <p class="note">PM2.5 rank = percentile within LA County. 100th = worst air quality. Full list of 222 tracts in priority_deployment_zones.csv</p>
+
+  <h2>What a sensor actually does</h2>
+  <p>A Raspberry Pi Zero W with a PMS5003 particulate sensor costs around $50 to build. It measures PM2.5 and PM10 — the fine particles that penetrate deep into lungs and cause respiratory disease, heart attacks, and premature death. The device connects to WiFi and uploads readings every few minutes to a public dashboard.</p>
+  <p><strong>This data has real-world consequences.</strong> Community organizations in West Oakland and Shafter, California used citizen sensor networks to document pollution from industrial facilities and port operations. The data was used in legal proceedings and led to regulatory enforcement that changed truck routing policies and resulted in facility fines. Without the data, there was no proof. With it, there was accountability.</p>
+  <p>The South Coast Air Quality Management District (SCAQMD) — the agency that enforces air quality rules in LA — responds faster and more aggressively to complaints backed by sensor data. A spike logged at 6am every weekday outside a facility is hard to argue with.</p>
+
+</div>
+
+<!-- Embedded interactive map -->
+<div class="wrap">
+  <section class="map-section" id="map">
+    <div class="map-head">
+      <h2>The interactive map</h2>
+      <p>Explore every priority zone and existing sensor below.</p>
+      <div class="legend">
+        <span><span class="dot red"></span> Priority deployment zones</span>
+        <span><span class="dot blue"></span> Existing PurpleAir sensors</span>
+      </div>
+    </div>
+    <div class="map-frame">
+      <iframe src="la_air_quality_gaps.html" title="LA air quality interactive map" loading="lazy"></iframe>
+    </div>
+    <div class="map-fallback">
+      Map not loading? <a href="la_air_quality_gaps.html" target="_blank" rel="noopener">Open it in a new tab ↗</a>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <h2>Next steps</h2>
+  <p>This analysis is a starting point. Here's how to turn it into deployed sensors and real impact.</p>
+
+  <div class="steps">
+    <div class="step">
+      <h3>Contact a community organization</h3>
+      <p>East Yard Communities for Environmental Justice (<a href="https://eastyard.org">eastyard.org</a>) and Communities for a Better Environment (<a href="https://cbecal.org">cbecal.org</a>) work in exactly these neighborhoods. Share this report and ask where they need sensors most.</p>
+    </div>
+    <div class="step">
+      <h3>Build a prototype sensor</h3>
+      <p>Raspberry Pi Zero W + PMS5003 sensor + weatherproof case. Total cost ~$50. Test it for 2 weeks next to an existing PurpleAir sensor to validate accuracy before deployment.</p>
+    </div>
+    <div class="step">
+      <h3>Find host locations</h3>
+      <p>Schools, churches, community centers, and willing residents in priority tracts. The sensor needs power and WiFi — nothing else. Most organizations will say yes if you explain why.</p>
+    </div>
+    <div class="step">
+      <h3>Publish the data</h3>
+      <p>Feed sensor readings into a public dashboard. Make it embeddable so community organizations can put it on their own websites. Data that lives behind a login helps nobody.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    Generated with open data · PurpleAir API · CalEnviroScreen 4.0 (OEHHA/CalEPA) · Analysis by Jess Wright · June 04, 2026
+  </div>
+</footer>
+
+</body>
+</html>
